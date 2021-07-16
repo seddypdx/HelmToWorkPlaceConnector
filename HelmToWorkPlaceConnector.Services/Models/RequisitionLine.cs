@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace HelmToWorkPlaceConnector.Services.Models
@@ -33,6 +34,8 @@ namespace HelmToWorkPlaceConnector.Services.Models
 
         public Guid CreatedById { get; set; }
         public User CreatedBy { get; set; }
+
+        [NotMapped]
         public dynamic UserDefined { get; set; }
 
 

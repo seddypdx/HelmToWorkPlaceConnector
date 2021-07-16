@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace HelmToWorkPlaceConnector.Services.Models
@@ -24,6 +25,8 @@ namespace HelmToWorkPlaceConnector.Services.Models
         public decimal EstCost { get; set; }
         public decimal LinkedItemType { get; set; }
         public Guid LinkedItemid { get; set; }
+        
+        [NotMapped]
         public dynamic UserDefined { get; set; }
     }
 
