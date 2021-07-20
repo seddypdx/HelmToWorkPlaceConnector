@@ -33,11 +33,12 @@ namespace Helm2WorkPlaceConnector
             try
             {
                 var processor = new Processor(config);
-                 processor.Process();
+                 //processor.Process();
+                processor.ProcessUpdate();
 
 
-              }
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Error(ex, "Problems Processing Requisitions");
 

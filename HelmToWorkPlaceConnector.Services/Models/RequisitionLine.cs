@@ -23,7 +23,7 @@ namespace HelmToWorkPlaceConnector.Services.Models
 
         public decimal Quantity { get; set; }
         public decimal? EstPrice { get; set; }
-        public Guid PartIt { get; set; }
+        public Guid PartId { get; set; }
         public string PartDescription { get; set; }
         public string PartNumber { get; set; }
         public string PartUnit { get; set; }
@@ -51,4 +51,18 @@ namespace HelmToWorkPlaceConnector.Services.Models
     {
         public RequisitionLineResponse Data { get; set; }
     }
+
+  
+    public class RequisitionLineUpdateDataSuccess
+    {
+        public string ActionType{ get; set; }
+
+        public Guid Id{ get; set; }
+    }
+
+    public class RequisitionLineUpdateDataFail
+    {
+        public IList<ErrorMsg> Data { get; set; }
+    }
+
 }

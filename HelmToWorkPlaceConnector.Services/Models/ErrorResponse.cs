@@ -9,4 +9,10 @@ namespace HelmToWorkPlaceConnector.Services.Models
         public int ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
     }
+
+    public class ErrorMsg
+    {
+        public string Entity { get; set; }
+        public string Message { get; set; }
+    }
 }
