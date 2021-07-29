@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace HelmToWorkPlaceConnector.Services.Models
 {
@@ -10,6 +11,8 @@ namespace HelmToWorkPlaceConnector.Services.Models
     public class Requisition
     {
         public Guid Id { get; set; }
+
+        [XmlElement(ElementName = "sdfCreated")]
         public DateTime Created { get; set; }
         public DateTime? DueDate { get; set; }
         public string Name { get; set; }
@@ -18,8 +21,13 @@ namespace HelmToWorkPlaceConnector.Services.Models
         public string ExternalNumber { get; set; }
         public int LineItemCount { get; set; }
         public string Status { get; set; }
+
+        [XmlIgnore]
         public Guid Divisionid { get; set; }
+
+        [XmlIgnore]
         public Guid CreatedById { get; set; }
+
         public User CreatedBy { get; set; }
         public string Assset { get; set; }
         public decimal EstCost { get; set; }
