@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using HelmToWorkPlaceConnector.Services.Models;
+using Microsoft.Data.SqlClient;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,11 +37,14 @@ namespace HelmToWorkPlaceConnector.Services.Services
 
         }
 
-        public void TestCall()
+        public void TestCall(RequisitionLine requisitionLine)
         {
 
             var username = @"tbl\chrisw";
-            var password = "5t7AmqnNnAiV";
+            var password = "5t7AmqnNnAiV"; 
+          // var username = @"WPAPIUser";
+          //  var password = "fg4K7T9QE9G";
+
             string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
                                            .GetBytes(username + ":" + password));
   
@@ -51,17 +56,35 @@ namespace HelmToWorkPlaceConnector.Services.Services
             objRequest.UserAgent = "Paramount Technologies (Workplace)";
             objRequest.ContentType = "application/x-www-form-urlencoded";
             objRequest.Accept = "*/*";
+            //string strContent = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            //                    <Requisition CompanyDB=""ITB"">
+            //                    <Header Action=""UP"" PassThroughLink=""MyTestID"">
+            //                    <Detail Action=""UP"" PassThroughLink=""LINE01"">
+            //                    <edfItemDesc>Widget Green</edfItemDesc>
+            //                    <idfLine>1</idfLine>
+            //                    <idfQty>23</idfQty>
+            //                    </Detail>
+            //                     </Header>
+            //                    </Requisition>
+            //                    ";
+
+            var lineInfo = XMLHelper.SerializeToXml(requisitionLine);
+
+            lineInfo = lineInfo.Replace("RequisitionLine", "Detail");
+            lineInfo = lineInfo.Replace(@"<?xml version=""1.0""?>", "");
+
             string strContent = @"<?xml version=""1.0"" encoding=""UTF-8""?>
                                 <Requisition CompanyDB=""ITB"">
                                 <Header Action=""UP"" PassThroughLink=""MyTestID"">
-                                <Detail Action=""UP"" PassThroughLink=""LINE01"">
-                                <edfItemDesc>Widget Green</edfItemDesc>
-                                <idfLine>1</idfLine>
-                                <idfQty>23</idfQty>
-                                </Detail>
-                                 </Header>
+                                <vdfDeptId>2000</vdfDeptId>
+                                <vdfSecurityID>tbl/chrisw</vdfSecurityID>"
+                              + lineInfo +
+
+                                
+                                 @"</Header>
                                 </Requisition>
                                 ";
+
 
             var xml = new XmlDocument();
             xml.LoadXml(strContent);
@@ -79,6 +102,21 @@ namespace HelmToWorkPlaceConnector.Services.Services
                 // Close and clean up the StreamReader
                 sr.Close();
             }
+
+        }
+
+        public void AddRequisition(Requisition requisition, RequisitionLine requisitionLine)
+        {
+
+            // build up the parameters
+            var parameters = new List<SqlParameter>();
+
+            parameters.Add(new SqlParameter("department", requisitionLine.Department));
+            parameters.Add(new SqlParameter("vendor", requisitionLine.VendorName));
+            parameters.Add(new SqlParameter("daateRequested", requisitionLine.Created));
+            parameters.Add(new SqlParameter("shipTo", "Main"));
+            parameters.Add(new SqlParameter("VendorDocNumber", requisitionLine.VendorName));
+        //    parameters.Add(new SqlParameter("Project", requisitionLine.pro));
 
         }
     }

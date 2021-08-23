@@ -35,6 +35,24 @@ namespace Helm2WorkPlaceConnector.Tests
         }
 
         [TestMethod]
+        public void TestUpdatePONumberLine()
+        {
+            try
+            {
+                var helmConnector = new HelmConnector("https://itb-sb.sandbox.helmconnect.com", "SqpQoe%2fk6xGBNgpG7MRFgnFVNFAzTXI1bEQyNlNjeEZraDB0");
+
+                var id = new System.Guid("38FBC272-E8E4-11EB-8136-0A46ECC44582");
+                helmConnector.UpdateRequisitionLinePONumber(id, "POUpdatedTHis");
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
+        [TestMethod]
         public void TestUpdateRequisitioLineFail()
         {
             try
@@ -57,7 +75,7 @@ namespace Helm2WorkPlaceConnector.Tests
             {
                 var helmConnector = new HelmConnector("https://itb-sb.sandbox.helmconnect.com", "SqpQoe%2fk6xGBNgpG7MRFgnFVNFAzTXI1bEQyNlNjeEZraDB0");
 
-                var id = new System.Guid("38FBC272-E8E4-11EB-8136-0A46ECC44582");
+                var id = new System.Guid("eb3cc909-0460-11ec-8136-0a46ecc44582");
                  var line = helmConnector.GetRequisitionLine(id);
             }
             catch (System.Exception ex)

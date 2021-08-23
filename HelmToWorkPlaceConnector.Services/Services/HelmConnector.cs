@@ -84,7 +84,9 @@ namespace HelmToWorkPlaceConnector.Services.Services
                 HttpResponseMessage response = client.GetAsync(uri).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
                 if (response.IsSuccessStatusCode)
                 {
-                    var dataObjects = response.Content.ReadAsAsync<RequisitionLineData>().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
+
+                    var jsonString = response.Content.ReadAsStringAsync().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
+                    var dataObjects = JsonConvert.DeserializeObject<RequisitionLineData>(jsonString);
 
                     try
                     {
@@ -139,8 +141,9 @@ namespace HelmToWorkPlaceConnector.Services.Services
                 if (response.IsSuccessStatusCode)
                 {
 
-                    var dataObjects = response.Content.ReadAsAsync<RequisitionLineData>().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
-
+                    var jsonString = response.Content.ReadAsStringAsync().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
+                    var dataObjects = JsonConvert.DeserializeObject<RequisitionLineData>(jsonString);
+    
                     try
                     {
                         foreach (var d in dataObjects.Data.Page)
@@ -176,13 +179,28 @@ namespace HelmToWorkPlaceConnector.Services.Services
             var requisitionLine = GetRequisitionLine(id);
 
             if (id == null)
-                throw new Exception($"Cannot fine Requisition Line {id} to update");
+                throw new Exception($"Cannot find Requisition Line {id} to update");
 
             requisitionLine.Status = status;
             UpdateRequisitionLineAsync(requisitionLine);
 
         }
 
+
+
+        public void UpdateRequisitionLinePONumber(Guid id, string PONumber)
+        {
+            var requisitionLine = GetRequisitionLine(id);
+
+
+            if (id == null)
+                throw new Exception($"Cannot find Requisition Line {id} to update");
+
+
+            requisitionLine.UserDefined.Workplaceponumber = PONumber;
+            UpdateRequisitionLineAsync(requisitionLine);
+
+        }
 
 
         private void UpdateRequisitionLineAsync(RequisitionLine requisitionLine)
