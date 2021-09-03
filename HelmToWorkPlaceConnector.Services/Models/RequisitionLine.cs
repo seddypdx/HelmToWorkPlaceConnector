@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 namespace HelmToWorkPlaceConnector.Services.Models
 {
 
+    public enum ConnectorStatusEnum { New = 10, InWorkplace = 20, WorkplaceModified=30, UpdatedToHelm = 40, ModifiedByHelm= 50}
+
     public class UserDefinedField
     {
         public string key;
@@ -51,7 +53,7 @@ namespace HelmToWorkPlaceConnector.Services.Models
         public decimal? EstPrice { get; set; }
 
         [XmlIgnore]
-        public Guid PartId { get; set; }
+        public Guid? PartId { get; set; }
 
         [XmlIgnore]
         public string PartDescription { get; set; }
@@ -111,6 +113,11 @@ namespace HelmToWorkPlaceConnector.Services.Models
         [XmlElement(ElementName = "edfCurrency")]
         [NotMapped]
         public string Currency { get; set; }
+
+        public ConnectorStatusEnum ConnectorStatusId { get; set; }
+        public ConnectorStatus ConnectorStatus { get; set; }
+
+        public int? idfRQDetailKey { get; set; }
 
     }
 

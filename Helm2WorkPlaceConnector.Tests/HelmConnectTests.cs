@@ -83,5 +83,37 @@ namespace Helm2WorkPlaceConnector.Tests
                 Console.WriteLine(ex.Message);
             }
         }
+
+        [TestMethod]
+        public void TestGetRequisition()
+        {
+            try
+            {
+                var helmConnector = new HelmConnector("https://itb-sb.sandbox.helmconnect.com", "SqpQoe%2fk6xGBNgpG7MRFgnFVNFAzTXI1bEQyNlNjeEZraDB0");
+
+                var id = new System.Guid("41d015b9-b2f8-11e9-8250-ec335919b4ac");
+                var req = helmConnector.GetRequisition(id);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void TestGetRequisitionPage()
+        {
+            try
+            {
+                var helmConnector = new HelmConnector("https://itb-sb.sandbox.helmconnect.com", "SqpQoe%2fk6xGBNgpG7MRFgnFVNFAzTXI1bEQyNlNjeEZraDB0");
+
+            
+                var req = helmConnector.GetRequisitionsByPage(1);
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }

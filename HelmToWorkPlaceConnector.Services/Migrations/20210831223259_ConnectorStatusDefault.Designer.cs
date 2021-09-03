@@ -4,14 +4,16 @@ using HelmToWorkPlaceConnector.Services.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HelmToWorkPlaceConnector.Services.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210831223259_ConnectorStatusDefault")]
+    partial class ConnectorStatusDefault
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,10 +66,10 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                     b.Property<int>("LineItemCount")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("LinkedItemType")
+                    b.Property<decimal>("LinkedItemType")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("LinkedItemid")
+                    b.Property<Guid>("LinkedItemid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -80,12 +82,6 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("idfRQHeaderKey")
-                        .HasColumnType("int");
-
-                    b.Property<string>("idfRQNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -163,9 +159,6 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
 
                     b.Property<string>("VendorName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("idfRQDetailKey")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

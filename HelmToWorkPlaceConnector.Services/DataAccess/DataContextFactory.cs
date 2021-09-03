@@ -12,7 +12,8 @@ namespace HelmToWorkPlaceConnector.Services.DataAccess
         {
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
 
-            return new DataContext("Server=(local);Database=HelmToWorkPlaceConnector;Trusted_Connection=True;MultipleActiveResultSets=true");
+           // return new DataContext("Server=(local);Database=HelmToWorkPlaceConnector;Trusted_Connection=True;MultipleActiveResultSets=true");
+            return new DataContext("Server=TEST-SQL01.TBL.LOCAL;Database=HelmToWorkPlaceConnector;uid=WPAPIUser;pwd=fg4K7T9QE9G;MultipleActiveResultSets=true");
         }
 
 

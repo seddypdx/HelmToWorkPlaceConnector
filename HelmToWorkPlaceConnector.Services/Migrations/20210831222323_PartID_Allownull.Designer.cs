@@ -4,14 +4,16 @@ using HelmToWorkPlaceConnector.Services.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HelmToWorkPlaceConnector.Services.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210831222323_PartID_Allownull")]
+    partial class PartID_Allownull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,10 +66,10 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                     b.Property<int>("LineItemCount")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("LinkedItemType")
+                    b.Property<decimal>("LinkedItemType")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("LinkedItemid")
+                    b.Property<Guid>("LinkedItemid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -80,12 +82,6 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("idfRQHeaderKey")
-                        .HasColumnType("int");
-
-                    b.Property<string>("idfRQNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -105,9 +101,6 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ConnectorStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ConnectorStatusId1")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
@@ -164,12 +157,9 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                     b.Property<string>("VendorName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("idfRQDetailKey")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ConnectorStatusId1");
+                    b.HasIndex("ConnectorStatusId");
 
                     b.HasIndex("CreatedById");
 
@@ -211,7 +201,9 @@ namespace HelmToWorkPlaceConnector.Services.Migrations
                 {
                     b.HasOne("HelmToWorkPlaceConnector.Services.Models.ConnectorStatus", "ConnectorStatus")
                         .WithMany()
-                        .HasForeignKey("ConnectorStatusId1");
+                        .HasForeignKey("ConnectorStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HelmToWorkPlaceConnector.Services.Models.User", "CreatedBy")
                         .WithMany()

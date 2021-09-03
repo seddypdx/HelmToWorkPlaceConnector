@@ -44,9 +44,13 @@ namespace HelmToWorkPlaceConnector.Services.Models
         [XmlIgnore]
         public decimal EstCost { get; set; }
         [XmlIgnore]
-        public decimal LinkedItemType { get; set; }
+        public decimal? LinkedItemType { get; set; }
         [XmlIgnore]
-        public Guid LinkedItemid { get; set; }
+        public Guid? LinkedItemid { get; set; }
+
+        public int? idfRQHeaderKey { get; set; }
+
+        public string idfRQNumber { get; set; }
 
         [XmlIgnore]
         [NotMapped]

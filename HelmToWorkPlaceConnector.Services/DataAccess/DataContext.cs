@@ -29,5 +29,6 @@ namespace HelmToWorkPlaceConnector.Services.DataAccess
 
         public DbSet<RequisitionLine> RequisitionLines { get; set; }
         public DbSet<Requisition> Requisitions { get; set; }
+        public DbSet<ConnectorStatus> ConnectorStatuses{ get; set; }
     }
 }

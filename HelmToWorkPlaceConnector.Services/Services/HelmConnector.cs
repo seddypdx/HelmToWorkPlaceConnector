@@ -55,6 +55,116 @@ namespace HelmToWorkPlaceConnector.Services.Services
          
         }
 
+        public Requisition GetRequisition(Guid id)
+        {
+            Log.Debug($"Getting Requisition header for id:{id}");
+            Requisition retRequisition = null;
+
+
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri($"{_endPoint}");
+
+                // Add an Accept header for JSON format.
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("API-Key", _apiKey);
+
+                var uri = $"{_endPoint}/api/v1/hsqe/Requisitions/FindRequisitions?page=1&Id={id}";
+                //var uri = $"{_endPoint}/api/v1/hsqe/Requisitions/FindRequisitions?page=1";
+
+
+                Log.Debug($"Calling to get Requisitions {uri}");
+
+
+                HttpResponseMessage response = client.GetAsync(uri).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+                if (response.IsSuccessStatusCode)
+                {
+
+                    var jsonString = response.Content.ReadAsStringAsync().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
+                    var dataObjects = JsonConvert.DeserializeObject<RequisitionData>(jsonString);
+
+                    try
+                    {
+                        foreach (var d in dataObjects.Data.Page)
+                        {
+                            Log.Debug($"Retreiving Requisition {d.Id}");
+                            retRequisition = d;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(ex, $"Problems reading Requisition Line ");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                    throw new Exception($"Response:{response.StatusCode} / Response Phrase {response.ReasonPhrase}. Problems calling for Requisitions at {uri}.   ");
+                }
+
+            }
+
+            return retRequisition;
+ 
+
+        }
+
+        public IList<Requisition> GetRequisitionsByPage(int page)
+        {
+            Log.Debug($"Getting Requisition header for page:{page}");
+            var retRequisitions = new List<Requisition>();
+
+
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri($"{_endPoint}");
+
+                // Add an Accept header for JSON format.
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("API-Key", _apiKey);
+
+                var uri = $"{_endPoint}/api/v1/hsqe/Requisitions/FindRequisitions?page={page}";
+
+
+                Log.Debug($"Calling to get Requisitions {uri}");
+
+
+                HttpResponseMessage response = client.GetAsync(uri).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
+                if (response.IsSuccessStatusCode)
+                {
+
+                    var jsonString = response.Content.ReadAsStringAsync().Result;  //Make sure to add a reference to System.Net.Http.Formatting.dll
+                    var dataObjects = JsonConvert.DeserializeObject<RequisitionData>(jsonString);
+
+                    try
+                    {
+                        foreach (var d in dataObjects.Data.Page)
+                        {
+                            Log.Debug($"Retreiving Requisition {d.Id}");
+                            retRequisitions.Add(d);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(ex, $"Problems reading Requisition Line ");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                    throw new Exception($"Response:{response.StatusCode} / Response Phrase {response.ReasonPhrase}. Problems calling for Requisitions at {uri}.   ");
+                }
+
+            }
+
+            return retRequisitions;
+
+
+        }
 
 
         public IList<RequisitionLine> GetRequisitionLines(string status, int page)
