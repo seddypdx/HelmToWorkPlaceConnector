@@ -1,5 +1,7 @@
-﻿using HelmToWorkPlaceConnector.Services.Models;
+﻿using HelmToWorkPlaceConnector.Services.DataAccess;
+using HelmToWorkPlaceConnector.Services.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -16,107 +18,26 @@ namespace HelmToWorkPlaceConnector.Services.Services
 
     public class WorkPlaceConnector
     {
-        private string _endPoint = "";
 
 
-        public WorkPlaceConnector(string endPoint)
+        public WorkPlaceConnector()
         {
-            Log.Debug($"Initializing WorkplaceConnector {endPoint}");
-
-            _endPoint = endPoint;
-        }
-
-    public static string TestRequisition()
-        {
-            string testXML = "<?xml version='1.0' encoding='UTF-8'?><Requisition CompanyDB='TWO' InterCompany=''><Header Action='' PassThroughLink='RQ1034'><edfCurrency/><edfDocumentID/><edfFacilityID/><edfFacilityIDFrom/><idfBlanketInvAmt/><idfBlanketInvPer/><idfComment/><idfCustAddr1/><idfCustAddr2/><idfCustAddr3/><idfCustAddr4/><idfCustAddr5/><idfCustAddr6/><idfCustAltPhone1/><idfCustAltPhone2/><idfCustAltPhoneExt1/><idfCustAltPhoneExt2/><idfCustAttention/><idfCustCity/><idfCustCountry/><idfCustEmail/> <idfCustFax/> <idfCustState/> <idfCustZipCode/> <idfDelegateNote/> <idfDescription/> <idfFlagBlanketInvAmtOverride/> <idfFlagKeepTogether/> <idfFlagProcessed/> <idfFlagSubmitted/> <idfLastLine/> <idfRQDate/> <idfRQHeaderKey/> <idfRQNumber/> <idfRQTypeKey/> <udfDateField01/> <udfDateField02/> <udfDateField03/> <udfDateField04/> <udfDateField05/> <udfLargeTextField01/> <udfLargeTextField02/> <udfLargeTextField03/> <udfNumericField01/> <udfNumericField02/> <udfNumericField03/> <udfNumericField04/> <udfNumericField05/> <udfNumericField06/> <udfNumericField07/> <udfNumericField08/> <udfNumericField09/> <udfNumericField10/> <udfTextField01/> <udfTextField02/> <udfTextField03/> <udfTextField04/> <udfTextField05/> <udfTextField06/> <udfTextField07/> <udfTextField08/> <udfTextField09/> <udfTextField10/> <vdfDeptID/> <vdfSecurityID/> <vdfWCSecurityDelegate/> <Detail Action='' PassThroughLink='LINE01'> <edfAnalysisGroup/> <edfBillTo/> <edfBuyer/>"
-     + "<edfCurrency /> <edfDocumentID /> <edfDropShip /> <edfDropShipCustomer /> <edfENCBreakDown /> <edfENCGrantID /> <edfENCProjectID /> <edfENCUserDefined1 /> <edfENCUserDefined2 /> <edfENCUserDefined3 /> <edfENCUserDefined4 /> <edfENCUserDefined5 /> <edfENCUserDefined6 /> <edfENCUserDefined7 /> <edfFacilityID /> <edfFacilityIDFrom /> <edfGL /> <edfItem /> <edfItemDesc /> <edfLocation /> <edfLocationFrom /> <edfManuItem /> <edfPABudgetAuthCost /> <edfPABudgetAuthQty /> <edfPALineItemSeq /> <edfPAProjectL1 /> <edfPAProjectL2 /> <edfPAProjectL3 /> <edfPOLine /> <edfPONumber /> <edfPaymentTerm /> <edfPrice /> <edfPricePrec /> <edfShipMethod /> <edfShipTo /> <edfTranType /> <edfUOM /> <edfVendor /> <edfVendorAddrID /> <edfVendorDocNum /> <edfVendorItem /> <edfWSProductIndicator /> <idfBudgetApplyDate /> <idfCommentInternal /> <idfDatePromised /> <idfDateRequired /> <idfFlagBlanketPO /> <idfFlagManualDist /> <idfFlagVCOverride /> <idfLine />"
-    + "<idfQty /> <idfQtyPrec /> <idfShipToAddr1 /> <idfShipToAddr2 /> <idfShipToAddr3 /> <idfShipToAltPhone1 /> <idfShipToAltPhone2 /> <idfShipToAltPhoneExt1 /> <idfShipToAltPhoneExt2 /> <idfShipToCity /> <idfShipToContact /> <idfShipToCountry /> <idfShipToFax /> <idfShipToName /> <idfShipToState /> <idfShipToZipCode /> <idfURLReference /> <idfVCOverrideNote /> <udfDateField01 /> <udfDateField02 /> <udfDateField03 /> <udfDateField04 /> <udfDateField05 /> <udfLargeTextField01 /> <udfLargeTextField02 /> <udfLargeTextField03 /> <udfNumericField01 /> <udfNumericField02 /> <udfNumericField03 /> <udfNumericField04 /> <udfNumericField05 /> <udfNumericField06 /> <udfNumericField07 /> <udfNumericField08 /> <udfNumericField09 /> <udfNumericField10 /> <udfTextField01 /> <udfTextField02 /> <udfTextField03 /> <udfTextField04 /> <udfTextField05 /> <udfTextField06 /> <udfTextField07 /> <udfTextField08 /> <udfTextField09 /> <udfTextField10 /> <vdfBudgetID /> <vdfBudgetValid /> <vdfComment /> <vdfContractID />"
-    + "<vdfDeptID /><vdfGL /><vdfPriorityID /><vdfQtyCanceled /><vdfTaxScheduleID /></ Detail ></ Header ></ Requisition > ";
-
-            return testXML;
+            Log.Debug($"Initializing WorkplaceConnector");
 
         }
 
-        public void TestCall(RequisitionLine requisitionLine)
-        {
-
-            var username = @"tbl\chrisw";
-            var password = "5t7AmqnNnAiV"; 
-          // var username = @"WPAPIUser";
-          //  var password = "fg4K7T9QE9G";
-
-            string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
-                                           .GetBytes(username + ":" + password));
   
-            HttpWebRequest objRequest = (HttpWebRequest)WebRequest.Create(_endPoint + "/API/DIAPI_IN.aspx");
-            objRequest.Headers.Add("Authorization", "Basic " + encoded);
-
-            objRequest.Method = "POST";
-            objRequest.KeepAlive = true;
-            objRequest.UserAgent = "Paramount Technologies (Workplace)";
-            objRequest.ContentType = "application/x-www-form-urlencoded";
-            objRequest.Accept = "*/*";
-            //string strContent = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-            //                    <Requisition CompanyDB=""ITB"">
-            //                    <Header Action=""UP"" PassThroughLink=""MyTestID"">
-            //                    <Detail Action=""UP"" PassThroughLink=""LINE01"">
-            //                    <edfItemDesc>Widget Green</edfItemDesc>
-            //                    <idfLine>1</idfLine>
-            //                    <idfQty>23</idfQty>
-            //                    </Detail>
-            //                     </Header>
-            //                    </Requisition>
-            //                    ";
-
-            var lineInfo = XMLHelper.SerializeToXml(requisitionLine);
-
-            lineInfo = lineInfo.Replace("RequisitionLine", "Detail");
-            lineInfo = lineInfo.Replace(@"<?xml version=""1.0""?>", "");
-
-            string strContent = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-                                <Requisition CompanyDB=""ITB"">
-                                <Header Action=""UP"" PassThroughLink=""MyTestID"">
-                                <vdfDeptId>2000</vdfDeptId>
-                                <vdfSecurityID>tbl/chrisw</vdfSecurityID>"
-                              + lineInfo +
-
-                                
-                                 @"</Header>
-                                </Requisition>
-                                ";
-
-
-            var xml = new XmlDocument();
-            xml.LoadXml(strContent);
-            var payload = HttpUtility.UrlEncode(xml.OuterXml);
-            objRequest.ContentLength = payload.Length;
-            StreamWriter myWriter = null;
-            myWriter = new StreamWriter(objRequest.GetRequestStream());
-            myWriter.Write(payload);
-            myWriter.Close();
-            // Make Call and get Response
-            HttpWebResponse objResponse = (HttpWebResponse)objRequest.GetResponse();
-            using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
-            {
-                string strResponse = sr.ReadToEnd();
-                // Close and clean up the StreamReader
-                sr.Close();
-            }
-
-        }
-
-        public void AddRequisition(Requisition requisition, RequisitionLine requisitionLine)
+        public void AddRequisitionLine(DataContext dbContext, Requisition requisition,  RequisitionLine requisitionLine)
         {
 
-            // build up the parameters
-            var parameters = new List<SqlParameter>();
+            dbContext.Database.ExecuteSqlRaw("h2w_RequisitionUpdate @p0", parameters: new[] { requisitionLine.Id.ToString() });
 
-            parameters.Add(new SqlParameter("department", requisitionLine.Department));
-            parameters.Add(new SqlParameter("vendor", requisitionLine.VendorName));
-            parameters.Add(new SqlParameter("daateRequested", requisitionLine.Created));
-            parameters.Add(new SqlParameter("shipTo", "Main"));
-            parameters.Add(new SqlParameter("VendorDocNumber", requisitionLine.VendorName));
-        //    parameters.Add(new SqlParameter("Project", requisitionLine.pro));
+            // after we call this sproc we need to update requisition and requisisiont line to get the 
+            // reference columns updated
+
+            dbContext.Entry(requisition).Reload();
+            dbContext.Entry(requisitionLine).Reload();
+
 
         }
     }
