@@ -33,8 +33,8 @@ namespace Helm2WorkPlaceConnector
             try
             {
                 var processor = new Processor(config);
-                 processor.Process();
-               // processor.ProcessUpdate();
+               processor.ProcessConfirmedRequisitions();
+                processor.ProcessRequisitionsAddedToAPo();
 
 
             }

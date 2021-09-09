@@ -308,6 +308,7 @@ namespace HelmToWorkPlaceConnector.Services.Services
 
 
             requisitionLine.UserDefined.Workplaceponumber = PONumber;
+            requisitionLine.Status = "Received On Shore";
             UpdateRequisitionLineAsync(requisitionLine);
 
         }

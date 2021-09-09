@@ -17,7 +17,7 @@ namespace HelmToWorkPlaceConnector.Services.Services
         {
             _config = config;
         }
-        public void Process()
+        public void ProcessConfirmedRequisitions()
         {
             var apiKey = _config.GetValue<string>("APIKey");
             var connectionString = _config.GetValue<string>("ConnectionString");
@@ -26,8 +26,8 @@ namespace HelmToWorkPlaceConnector.Services.Services
             Log.Debug($"Processing Process Requisitions against : {_config.GetValue<string>("ConnectionString")}");
 
             var helmConnector = new HelmConnector(basePath, apiKey);
-            //var requisitionLines = helmConnector.GetRequisitionLines("Confirmed");
-            var requisitionLines = helmConnector.GetRequisitionLines("");
+            var requisitionLines = helmConnector.GetRequisitionLines("Confirmed");
+            //var requisitionLines = helmConnector.GetRequisitionLines("");
 
 
             using (var db = new DataContext(connectionString))
@@ -75,17 +75,41 @@ namespace HelmToWorkPlaceConnector.Services.Services
             }
         }
 
-        public void ProcessUpdate()
+        /// <summary>
+        /// This will find Requisision lines that have been assigned po's and not written back to helm
+        /// It will write the po number to helm, and set the requitiotion line in helm to received on shore
+        /// and it will update the Requistion line connection status to POUpdtedToHelm
+        /// </summary>
+        public void ProcessRequisitionsAddedToAPo()
         {
             try
             {
-                var helmConnector = new HelmConnector("https://itb-sb.sandbox.helmconnect.com", "SqpQoe%2fk6xGBNgpG7MRFgnFVNFAzTXI1bEQyNlNjeEZraDB0");
+                var apiKey = _config.GetValue<string>("APIKey");
+                var basePath = _config.GetValue<string>("BasePath");
+                var connectionString = _config.GetValue<string>("ConnectionString");
 
-                var requisitionLine = new RequisitionLine()
+
+                Log.Debug($"Processing Process Requisitions against : {_config.GetValue<string>("ConnectionString")}");
+
+                var helmConnector = new HelmConnector(basePath, apiKey);
+
+
+                using (var db = new DataContext(connectionString))
                 {
-                    Id = new System.Guid("38FBC272-E8E4-11EB-8136-0A46ECC44582"),
-                    Status = "Received On Shore"
-                };
+                    var lines = db.RequisitionLines.Where(x => x.ConnectorStatusId == ConnectorStatusEnum.AddedToPO).ToList();
+
+                    foreach (var line in lines)
+                    {
+                        helmConnector.UpdateRequisitionLinePONumber(line.Id, line.PONumber);
+                        line.ConnectorStatusId = ConnectorStatusEnum.POUpdatedToHelm;
+                        db.SaveChanges();
+
+                    }
+                }
+
+
+
+            
 
               //  await Task.Run(() => helmConnector.UpdateRequisitionLineAsync(requisitionLine));
 

@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace HelmToWorkPlaceConnector.Services.Models
 {
 
-    public enum ConnectorStatusEnum { New = 10, InWorkplace = 20, WorkplaceModified=30, UpdatedToHelm = 40, ModifiedByHelm= 50}
+    public enum ConnectorStatusEnum { New = 10, InWorkplace = 20, AddedToPO=30, POUpdatedToHelm = 40, ModifiedByHelm= 50}
 
     public class UserDefinedField
     {
@@ -119,6 +119,7 @@ namespace HelmToWorkPlaceConnector.Services.Models
 
         public int? idfRQDetailKey { get; set; }
 
+        public string PONumber { get; set; }
     }
 
     public class RequisitionLineResponse
