@@ -29,6 +29,7 @@ namespace HelmToWorkPlaceConnector.Services.Services
   
         public void AddRequisitionLine(DataContext dbContext, Requisition requisition,  RequisitionLine requisitionLine)
         {
+            Log.Debug($"Adding Requisition Line ID: {requisitionLine.Id}");
 
             dbContext.Database.ExecuteSqlRaw("h2w_RequisitionUpdate @p0", parameters: new[] { requisitionLine.Id.ToString() });
 
@@ -37,6 +38,18 @@ namespace HelmToWorkPlaceConnector.Services.Services
 
             dbContext.Entry(requisition).Reload();
             dbContext.Entry(requisitionLine).Reload();
+
+
+        }
+
+        public void QueueRequisitionLinesToSendPO(DataContext dbContext)
+        {
+            Log.Debug($"Calling RequisitionLiens to be queued");
+
+            dbContext.Database.ExecuteSqlRaw("h2w_RequisitionLineQueuePOs ");
+
+            // after we call this sproc we need to update requisition and requisisiont line to get the 
+            // reference columns updated
 
 
         }

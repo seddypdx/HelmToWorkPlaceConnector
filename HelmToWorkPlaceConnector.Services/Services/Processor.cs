@@ -75,6 +75,77 @@ namespace HelmToWorkPlaceConnector.Services.Services
             }
         }
 
+
+        /// <summary>
+        /// This take all Requisition lInes in status 10 (new) and write them to workplace
+        /// </summary>
+        public void ProcessNewlyAddedRequisitionsToWorkplace()
+        {
+            try
+            {
+                var connectionString = _config.GetValue<string>("ConnectionString");
+                var workPlaceConnector = new WorkPlaceConnector();
+
+
+                Log.Debug($"Processing New Requisitions into workplace");
+
+
+
+                using (var db = new DataContext(connectionString))
+                {
+                    var lines = db.RequisitionLines.Where(x => x.ConnectorStatusId == ConnectorStatusEnum.New).ToList();
+
+                    foreach (var line in lines)
+                    {
+                        try
+                        {
+                            Log.Debug($"Adding Requisition {line.Id} to Workpalce");
+                            var requisition = db.Requisitions.Find(line.RequisitionId);
+                            workPlaceConnector.AddRequisitionLine(db, requisition, line);
+
+                            line.ConnectorStatusId = ConnectorStatusEnum.InWorkplace;
+                            db.SaveChanges();
+
+                            Log.Debug($"Helm LineId {line.Id} Connected to  Workplace Id {line.idfRQDetailKey}");
+
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, $"Processing line {line.RequisitionId}");
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Log.Error(ex, $"Processing RequisitionLines");
+
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Call this to find all Requisitions in Workplace that have been assigned PO's and need to be sent
+        /// back to Helm
+        /// </summary>
+        public void QueueWorkplaceLinesWithPO()
+        {
+            Log.Debug($"Queuing Po's that need to be sent over to workplace");
+
+            var connectionString = _config.GetValue<string>("ConnectionString");
+
+            using (var db = new DataContext(connectionString))
+            {
+
+                var workplaceConnector = new WorkPlaceConnector();
+                workplaceConnector.QueueRequisitionLinesToSendPO(db);
+            }
+
+
+        }
+
         /// <summary>
         /// This will find Requisision lines that have been assigned po's and not written back to helm
         /// It will write the po number to helm, and set the requitiotion line in helm to received on shore
@@ -89,34 +160,36 @@ namespace HelmToWorkPlaceConnector.Services.Services
                 var connectionString = _config.GetValue<string>("ConnectionString");
 
 
-                Log.Debug($"Processing Process Requisitions against : {_config.GetValue<string>("ConnectionString")}");
+                Log.Debug($"Processing Requisitions that have been assigned a PI in workplace");
 
                 var helmConnector = new HelmConnector(basePath, apiKey);
 
 
                 using (var db = new DataContext(connectionString))
                 {
-                    var lines = db.RequisitionLines.Where(x => x.ConnectorStatusId == ConnectorStatusEnum.AddedToPO).ToList();
+                    var lines = db.RequisitionLines.Where(x => x.ConnectorStatusId == ConnectorStatusEnum.AssignedPO).ToList();
 
                     foreach (var line in lines)
                     {
-                        helmConnector.UpdateRequisitionLinePONumber(line.Id, line.PONumber);
-                        line.ConnectorStatusId = ConnectorStatusEnum.POUpdatedToHelm;
-                        db.SaveChanges();
+                        try
+                        {
+                            Log.Debug($"Writing PO {line.PONumber} back to Helm for RequisitionLine {line.Id}");
+                            helmConnector.UpdateRequisitionLinePONumber(line.Id, line.PONumber);
+                            line.ConnectorStatusId = ConnectorStatusEnum.POWrittenToHelm;
+                            db.SaveChanges();
 
+                        }
+                        catch(Exception ex)
+                        {
+                            Log.Error(ex, $"ProcessRequisitionsAddedToAPo");
+                        }
                     }
                 }
-
-
-
-            
-
-              //  await Task.Run(() => helmConnector.UpdateRequisitionLineAsync(requisitionLine));
-
-               // helmConnector.UpdateRequisitionLineAsync(requisitionLine);
             }
             catch (System.Exception ex)
             {
+                Log.Error(ex, $"Processing RequisitionLines");
+
                 Console.WriteLine(ex.Message);
             }
         }
