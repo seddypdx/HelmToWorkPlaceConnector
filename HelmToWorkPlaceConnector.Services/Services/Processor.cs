@@ -58,6 +58,8 @@ namespace HelmToWorkPlaceConnector.Services.Services
             {
                 Log.Debug($"Adding Requisition line from Helm to database:{line.Id}.");
                 line.ConnectorStatusId = ConnectorStatusEnum.New;
+                line.Message = "Initialized in Database.";
+                line.LastUpdated = DateTime.Now;
                 db.RequisitionLines.Add(line);
 
                 if (!db.Requisitions.Where(x => x.Id == line.RequisitionId).Any())
@@ -104,6 +106,8 @@ namespace HelmToWorkPlaceConnector.Services.Services
                             workPlaceConnector.AddRequisitionLine(db, requisition, line);
 
                             line.ConnectorStatusId = ConnectorStatusEnum.InWorkplace;
+                            line.Message = "Added to Workplace.";
+                            line.LastUpdated = DateTime.Now;
                             db.SaveChanges();
 
                             Log.Debug($"Helm LineId {line.Id} Connected to  Workplace Id {line.idfRQDetailKey}");
@@ -176,6 +180,9 @@ namespace HelmToWorkPlaceConnector.Services.Services
                             Log.Debug($"Writing PO {line.PONumber} back to Helm for RequisitionLine {line.Id}");
                             helmConnector.UpdateRequisitionLinePONumber(line.Id, line.PONumber);
                             line.ConnectorStatusId = ConnectorStatusEnum.POWrittenToHelm;
+                            line.Message = "PONumber sent to Helm";
+                            line.LastUpdated = DateTime.Now;
+
                             db.SaveChanges();
 
                         }
