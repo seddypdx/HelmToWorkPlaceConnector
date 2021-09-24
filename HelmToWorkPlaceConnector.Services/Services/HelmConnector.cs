@@ -296,7 +296,7 @@ namespace HelmToWorkPlaceConnector.Services.Services
 
         }
 
-
+      
 
         public void UpdateRequisitionLinePONumber(Guid id, string PONumber)
         {
@@ -306,8 +306,17 @@ namespace HelmToWorkPlaceConnector.Services.Services
             if (id == null)
                 throw new Exception($"Cannot find Requisition Line {id} to update");
 
+            if (requisitionLine.UserDefined == null)
+            {
 
-            requisitionLine.UserDefined.Workplaceponumber = PONumber;
+                var userDefined = new UserDefinedPo() { Workplaceponumber = PONumber };
+
+                requisitionLine.UserDefined = userDefined;
+
+            }
+            else
+               requisitionLine.UserDefined.Workplaceponumber = PONumber;
+
             requisitionLine.Status = "Received On Shore";
             UpdateRequisitionLineAsync(requisitionLine);
 

@@ -9,10 +9,9 @@ namespace HelmToWorkPlaceConnector.Services.Models
 
     public enum ConnectorStatusEnum { New = 10, InWorkplace = 20, AssignedPO=30, POWrittenToHelm = 40, ModifiedByHelm= 50}
 
-    public class UserDefinedField
+    public class UserDefinedPo
     {
-        public string key;
-        public string value;
+        public string Workplaceponumber { get; set; }
     }
 
 

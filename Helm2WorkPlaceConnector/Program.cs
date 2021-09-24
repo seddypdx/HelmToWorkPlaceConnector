@@ -45,6 +45,7 @@ namespace Helm2WorkPlaceConnector
         {
             try
             {
+                Log.Debug("ProcessRequisitionsAddedToAPo");
                 processor.QueueWorkplaceLinesWithPO();
                 processor.ProcessRequisitionsAddedToAPo();
 
